@@ -77,13 +77,13 @@ int main(int argc, char ** argv) {
   TString outfile; 
 
   if (do_const_cut && N_Missing_Cut)
-    outfile = "histograms_reco_No_Missing_const_output_mom_res_" + (TString)Form("sigma_eta_%i_p_%i_B_%1.1f",size_eta_bin-1,size_mom_bin-1,B_Field) + ".root";
+    outfile = "DeltaR_histograms_reco_No_Missing_const_output_mom_res_" + (TString)Form("sigma_eta_%i_p_%i_B_%1.1f",size_eta_bin-1,size_mom_bin-1,B_Field) + ".root";
 
   if (do_const_cut && !N_Missing_Cut)
-    outfile = "histograms_reco_Missing_const_output_mom_res_" + (TString)Form("sigma_eta_%i_p_%i_B_%1.1f",size_eta_bin-1,size_mom_bin-1,B_Field) + ".root";
+    outfile = "DeltaR_histograms_reco_Missing_const_output_mom_res_" + (TString)Form("sigma_eta_%i_p_%i_B_%1.1f",size_eta_bin-1,size_mom_bin-1,B_Field) + ".root";
 
   if (!do_const_cut)
-    outfile = "histograms_reco_NoCuts_output_mom_res_" + (TString)Form("sigma_eta_%i_p_%i_B_%1.1f",size_eta_bin-1,size_mom_bin-1,B_Field) + ".root";
+    outfile = "DeltaR_histograms_reco_NoCuts_output_mom_res_" + (TString)Form("sigma_eta_%i_p_%i_B_%1.1f",size_eta_bin-1,size_mom_bin-1,B_Field) + ".root";
 
   cout<<endl<<"Input Root File = "<<infile<<endl;
   cout<<endl<<"Output Root File = "<<outfile<<endl;
@@ -100,19 +100,19 @@ int main(int argc, char ** argv) {
   TFile * F = new TFile(infile);
   TTree *T = dynamic_cast<TTree *>(F->Get("T"));
   if (T == NULL) { std::cout << " Tree Fail " << std::endl; exit(EXIT_FAILURE); }
-  Int_t njets;
+  Int_t njets, nAlltruthjets;
   int nEntries = T -> GetEntries();
   const int MaxNumJets = 20;
   const int kMaxConstituents = 100;
 
-  array<Float_t, MaxNumJets> E,Eta,Phi,Pt,gE,gEta,gPhi,gPt;
-  array<Int_t, MaxNumJets> NComponent, gNComponent;
+  array<Float_t, MaxNumJets> E,Eta,Phi,Pt,all_truthE,all_truthEta,all_truthPhi,all_truthPt;
+  array<Int_t, MaxNumJets> NComponent, alltruth_NComponent;
 
   Float_t electron_gE,electron_gEta,electron_gPhi,electron_gPt;
   Float_t electron_E,electron_Eta,electron_Phi,electron_Pt;
 
-  array<array<Float_t, kMaxConstituents >, MaxNumJets > gComponent_Eta,gComponent_PID,
-    gComponent_Pt,gComponent_Phi,gComponent_E, gComponent_Charge;
+  array<array<Float_t, kMaxConstituents >, MaxNumJets > all_Component_Eta,all_Component_PID,
+    all_Component_Pt,all_Component_Phi,all_Component_E, all_Component_Charge;
 
   array<array<Float_t, kMaxConstituents >, MaxNumJets > Component_Eta,Component_Phi,Component_P,Component_Pt;
 
@@ -128,18 +128,19 @@ int main(int argc, char ** argv) {
   T -> SetBranchAddress("Constituent_recoP",Component_P.data());
   T -> SetBranchAddress("Constituent_recoPhi",Component_Phi.data());
 
-  T -> SetBranchAddress("matched_truthE",&gE);
-  T -> SetBranchAddress("matched_truthEta",&gEta);
-  T -> SetBranchAddress("matched_truthPhi",&gPhi);
-  T -> SetBranchAddress("matched_truthPt",&gPt);
-  T -> SetBranchAddress("matched_truthNComponent",&gNComponent);
+  T -> SetBranchAddress("nAlltruthjets", &nAlltruthjets);
+  T -> SetBranchAddress("all_truthE",&all_truthE);
+  T -> SetBranchAddress("all_truthEta",&all_truthEta);
+  T -> SetBranchAddress("all_truthPhi",&all_truthPhi);
+  T -> SetBranchAddress("all_truthPt",&all_truthPt);
+  T -> SetBranchAddress("all_truthNComponent",&alltruth_NComponent);
 
-  T -> SetBranchAddress("matched_Constituent_truthEta", gComponent_Eta.data());
-  T -> SetBranchAddress("matched_Constituent_truthPID",gComponent_PID.data());
-  T -> SetBranchAddress("matched_Constituent_truthPt",gComponent_Pt.data());
-  T -> SetBranchAddress("matched_Constituent_truthE",gComponent_E.data());
-  T -> SetBranchAddress("matched_Constituent_truthPhi",gComponent_Phi.data());
-  T -> SetBranchAddress("matched_Constituent_truthCharge",gComponent_Charge.data());
+  T -> SetBranchAddress("all_Constituent_truthEta", all_Component_Eta.data());
+  T -> SetBranchAddress("all_Constituent_truthPID",all_Component_PID.data());
+  T -> SetBranchAddress("all_Constituent_truthPt",all_Component_Pt.data());
+  T -> SetBranchAddress("all_Constituent_truthE",all_Component_E.data());
+  T -> SetBranchAddress("all_Constituent_truthPhi",all_Component_Phi.data());
+  T -> SetBranchAddress("all_Constituent_truthCharge",all_Component_Charge.data());
 
   T -> SetBranchAddress("electron_recoE",&electron_E);
   T -> SetBranchAddress("electron_recoEta",&electron_Eta);
@@ -250,11 +251,9 @@ int main(int argc, char ** argv) {
     for (int n = 0; n < njets; ++n) {
 
       if (NComponent[n] < 4) continue;
-      if (isnan(gE[n])) continue;
+      if (isnan(all_truthE[n])) continue;
       if (E[n] < 4.0) continue;
       ROOT::Math::PtEtaPhiEVector Lorentz(Pt[n],Eta[n],Phi[n],E[n]);
-      ROOT::Math::PtEtaPhiEVector gLorentz(gPt[n],gEta[n],gPhi[n],gE[n]);
-      ROOT::Math::PtEtaPhiEVector gFullLorentz(gPt[n],gEta[n],gPhi[n],gE[n]);
 
       bool eta_const_cut = true; //avoid crack where barrel meets disks
       bool pt_const_cut = true;//cut away helixes
@@ -262,12 +261,6 @@ int main(int argc, char ** argv) {
       int n_ch = 0;
       int n_neutral_max = 1;
       float max_DeltaR = 0.1;
-
-      //Truth-Level Cuts (Don't use)
-      /* for (int i = 0; i < gNComponent[n]; i++) */
-      /* eta_const_cut = (  ( (abs(gComponent_Eta[n][i]) > 1.04) && (abs(gComponent_Eta[n][i]) < 1.15) ) */
-      /*     || (abs(gComponent_Eta[n][i]) > 3.5)  );//Aluminum Cone between 1.06 and 1.13 eta */
-      /* pt_const_cut = (gComponent_Pt[n][i] < constituent_pT_threshold(gComponent_Eta[n][i],B_Field)); */
 
 
       //Using Reco-Constituents. Only Cuts that can be used in time of experiment can be used to study performance.
@@ -280,18 +273,72 @@ int main(int argc, char ** argv) {
       }
 
       if (eta_const_cut || pt_const_cut) continue;
+//ORIGINAL HERE
 
-      for (int t = 0; t < gNComponent[n]; t++){
-        if (gComponent_Charge[n][t] == 0)
+      int match_index = -1;
+      std::vector<int> v_matches;
+      float temp_dR = 1e10;
+      float temp_E = 0;
+
+      ROOT::Math::PtEtaPhiEVector gLorentz;
+      ROOT::Math::PtEtaPhiEVector gFullLorentz;
+ 
+      for (int a = 0; a < nAlltruthjets; a++){ 
+          if (isnan(all_truthE[a])) continue;
+          gLorentz.SetCoordinates(all_truthPt[a],all_truthEta[a],all_truthPhi[a],all_truthE[a]);
+          gFullLorentz.SetCoordinates(all_truthPt[a],all_truthEta[a],all_truthPhi[a],all_truthE[a]);
+
+
+          //Count and Subtract Neutrals from Charged Jet
+          for (int t = 0; t < alltruth_NComponent[a]; t++){
+              if (all_Component_Charge[a][t] == 0)
+                n_neutral++;
+              else
+                n_ch++;
+
+              ROOT::Math::PtEtaPhiEVector gConstLorentz(all_Component_Pt[a][t],
+                  all_Component_Eta[a][t],
+                  all_Component_Phi[a][t],
+                  all_Component_E[a][t]);
+              if (all_Component_Charge[a][t] == 0)
+                gLorentz -= gConstLorentz;
+          }
+
+          float dR = ROOT::Math::VectorUtil::DeltaR(Lorentz,gLorentz);
+          if ( (match_index < 0) && (dR < 0.1) ) {
+            match_index = a;
+            temp_dR = dR; 
+            temp_E = gLorentz.E();
+          }
+          /* else if ((dR < 0.1) && (dR < temp_dR)) { */
+          else if ((dR < 0.1) && (temp_E > gLorentz.E())) {
+            match_index = a;
+            temp_dR = dR;
+            temp_E = gLorentz.E();
+          }
+
+          if (match_index > 0 ) v_matches.push_back(match_index); 
+          /* std::cout<<__LINE__<<": "<<a<<": temp dR = "<<temp_dR<<std::endl; */
+
+      }// alltruth loop to find matched truthjet
+
+      if (match_index < 0) continue;
+      /* if (std::find(v_matches.begin(), v_matches.end(),match_index)!=v_matches.end()) continue; */
+
+      //Neutrals need to be subtracted again
+      gLorentz.SetCoordinates(all_truthPt[match_index],all_truthEta[match_index],all_truthPhi[match_index],all_truthE[match_index]);
+      gFullLorentz.SetCoordinates(all_truthPt[match_index],all_truthEta[match_index],all_truthPhi[match_index],all_truthE[match_index]);
+      for (int t = 0; t < alltruth_NComponent[match_index]; t++){
+        if (all_Component_Charge[match_index][t] == 0)
           n_neutral++;
         else
           n_ch++;
 
-        ROOT::Math::PtEtaPhiEVector gConstLorentz(gComponent_Pt[n][t],
-            gComponent_Eta[n][t],
-            gComponent_Phi[n][t],
-            gComponent_E[n][t]);
-        if (gComponent_Charge[n][t] == 0)
+        ROOT::Math::PtEtaPhiEVector gConstLorentz(all_Component_Pt[match_index][t],
+            all_Component_Eta[match_index][t],
+            all_Component_Phi[match_index][t],
+            all_Component_E[match_index][t]);
+        if (all_Component_Charge[match_index][t] == 0)
           gLorentz -= gConstLorentz;
       }
 
@@ -299,7 +346,7 @@ int main(int argc, char ** argv) {
       /* float dR = ROOT::Math::VectorUtil::DeltaR(Lorentz,gLorentz); */
       /* if (dR > max_DeltaR) continue; */
 
-      int N_Missing = gNComponent[n] - NComponent[n] - n_neutral;
+      int N_Missing = alltruth_NComponent[match_index] - NComponent[n] - n_neutral;
       if (do_const_cut)
       {
         if ( (N_Missing_Cut) && (N_Missing >= N_Missing_Max) ) {continue;}
@@ -317,10 +364,10 @@ int main(int argc, char ** argv) {
 
       truth_jet_p->Fill(gLorentz.P());
       truth_jet_eta->Fill(gLorentz.Eta());
-      truth_NConstituents->Fill(gNComponent[n]);
-      for (int t = 0; t < gNComponent[n]; t++){
-        truth_comp_pt->Fill(gComponent_Pt[n][t]);
-        truth_comp_eta->Fill(gComponent_Eta[n][t]);
+      truth_NConstituents->Fill(alltruth_NComponent[match_index]);
+      for (int t = 0; t < alltruth_NComponent[match_index]; t++){
+        truth_comp_pt->Fill(all_Component_Pt[match_index][t]);
+        truth_comp_eta->Fill(all_Component_Eta[match_index][t]);
       }
 
       float geta = gLorentz.Eta();
@@ -411,12 +458,12 @@ int main(int argc, char ** argv) {
   Ddph_dir->cd();
   for(int p = 0 ; p < size_mom_bin-1 ; p++){
     for(int et = 0 ; et < size_eta_bin-1 ; et++){ 
-      h1_eDelta_dph_p_et_bins[et][p]->Write(Form("h1_eDelta_dph_p_et_bins_%i_p_%i_bin",et,p));
+      h1_eDelta_dph_p_et_bins[et][p]->Write(Form("h1_eDelta_dph_et_%i_p_%i_bin",et,p));
     }
   }
   for(int p = 0 ; p < size_mom_bin-1 ; p++){
     for(int et = 0 ; et < size_eta_bin-1 ; et++){ 
-      h1_efulljet_Delta_dph_p_et_bins[et][p]->Write(Form("h1_efulljet_Delta_dph_p_et_bins_%i_p_%i_bin",et,p));
+      h1_efulljet_Delta_dph_p_et_bins[et][p]->Write(Form("h1_efulljet_Delta_dph_et_%i_p_%i_bin",et,p));
     }
   } 
 
