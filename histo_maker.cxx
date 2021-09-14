@@ -411,12 +411,12 @@ int main(int argc, char ** argv) {
   Ddph_dir->cd();
   for(int p = 0 ; p < size_mom_bin-1 ; p++){
     for(int et = 0 ; et < size_eta_bin-1 ; et++){ 
-      h1_eDelta_dph_p_et_bins[et][p]->Write(Form("h1_eDelta_dph_p_et_bins_%i_p_%i_bin",et,p));
+      h1_eDelta_dph_p_et_bins[et][p]->Write(Form("h1_eDelta_dph_et_%i_p_%i_bin",et,p));
     }
   }
   for(int p = 0 ; p < size_mom_bin-1 ; p++){
     for(int et = 0 ; et < size_eta_bin-1 ; et++){ 
-      h1_efulljet_Delta_dph_p_et_bins[et][p]->Write(Form("h1_efulljet_Delta_dph_p_et_bins_%i_p_%i_bin",et,p));
+      h1_efulljet_Delta_dph_p_et_bins[et][p]->Write(Form("h1_efulljet_Delta_dph_et_%i_p_%i_bin",et,p));
     }
   } 
 
