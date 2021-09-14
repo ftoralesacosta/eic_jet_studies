@@ -329,10 +329,10 @@ int main(int argc, char ** argv) {
 
       float eTrue_DeltaPhi = TMath::Abs(TVector2::Phi_mpi_pi(gLorentz.Phi() - electron_gPhi - TMath::Pi()));
       float eReco_DeltaPhi = TMath::Abs(TVector2::Phi_mpi_pi(Lorentz.Phi() - electron_Phi - TMath::Pi()));
-      float eJet_dDeltaPhi = (eTrue_DeltaPhi-eReco_DeltaPhi)/eTrue_DeltaPhi;
+      float eJet_dDeltaPhi = (eTrue_DeltaPhi-eReco_DeltaPhi);
 
       float eFull_DeltaPhi = TMath::Abs(TVector2::Phi_mpi_pi(gFullLorentz.Phi() - electron_gPhi - TMath::Pi()));
-      float efullJet_dDeltaPhi = (eTrue_DeltaPhi-eFull_DeltaPhi)/eTrue_DeltaPhi;
+      float efullJet_dDeltaPhi = (eTrue_DeltaPhi-eFull_DeltaPhi);
 
       float E_gE = (Lorentz.E()/gLorentz.E());
       //float E_gE = (E[n]/gE[n]);
