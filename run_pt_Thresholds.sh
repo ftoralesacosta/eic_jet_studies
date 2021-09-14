@@ -1,6 +1,6 @@
 #!/bin/bash
-rm eJet_Distributions_MinpT
-make eJet_Distributions_MinpT
+rm DeltaR_eJet_Distributions_MinpT
+make DeltaR_eJet_Distributions_MinpT
 array_fields=(1.4 3.0)
 array_files=("1p4T_combined.root" "3T_combined.root")
 array_thresholds=(0.0 0.1 0.3 0.5 0.7 1.0)
@@ -11,8 +11,8 @@ do
   for pT in "${array_thresholds[@]}" #Min pT Thresholds in GeV 
   do
     # ./eJet_Distributions $B $pT
-    command="./eJet_Distributions_MinpT ../data/${array_files[B]} ${array_fields[B]} ${pT}"
-    # echo $command
+    command="./DeltaR_eJet_Distributions_MinpT ${array_files[B]} ${array_fields[B]} ${pT}"
+    echo $command
     $command &
   done
 done

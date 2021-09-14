@@ -121,8 +121,8 @@ float dphi_res(float B, float jet_phi, float jet_eta, float e_phi, float e_eta)
 using namespace std;
 int main(int argc, char *argv[])
 {
-  if (argc < 3) {
-    std::cout<<"Syntax: [Command] [File] [B Field]"<<std::endl;
+  if (argc < 4) {
+    std::cout<<"Syntax: [Command] [File] [B Field] [min constituent pT]"<<std::endl;
     exit(EXIT_FAILURE);
   }
   //for (int iarg = 1; iarg < argc; iarg++) {
@@ -133,7 +133,10 @@ int main(int argc, char *argv[])
   std::cout<< "B = "<<B_Field<<std::endl;
   std::cout << "Opening: " << (TString)argv[iarg] << std::endl;
 
-  float scale_factor = 1.;
+  float pt_min = atof(argv[3]);
+  std::cout<<"Minimumum Jet Constituent pT = "<<pt_min<<std::endl;
+
+  float scale_factor = 1.;//These scale factors are specific to the files used. ../data 3T_combined.root eg
   if (B_Field == 3.0)
     scale_factor = 0.4010189811930663;
   else //1.4T
@@ -478,7 +481,7 @@ int main(int argc, char *argv[])
       //Uncomment to take charged_all truth
       for (int i = 0; i < alltruth_NComponent[ia]; i++)
       {
-        pt_const_cut = (all_Component_Pt[ia][i] < .1);
+        pt_const_cut = (all_Component_Pt[ia][i] < pt_min);
         if (pt_const_cut) continue;
       /*   ROOT::Math::PtEtaPhiEVector AConstLorentz(all_Component_Pt[ia][i],all_Component_Eta[ia][i],all_Component_Phi[ia][i],all_Component_E[ia][i]); */
       /*   /1* if (all_Component_Charge[ia][i] == 0) *1/ */
@@ -507,7 +510,7 @@ int main(int argc, char *argv[])
     //RECO Jet Loop
     for (int n = 0; n < njets; ++n) {
 
-      if (std::isnan(gE[n])) continue; //reco jet must have a truth match
+      /* if (std::isnan(E[n])) continue; //reco jet must have a truth match */
 
       ROOT::Math::PtEtaPhiEVector Lorentz(Pt[n],Eta[n],Phi[n],E[n]);
       /* ROOT::Math::PtEtaPhiEVector gLorentz(gPt[n],gEta[n],gPhi[n],gE[n]); */
@@ -541,12 +544,12 @@ int main(int argc, char *argv[])
         eta_const_cut = (  ( (abs(Component_Eta[n][i]) > 1.06) && (abs(Component_Eta[n][i]) < 1.13) )
             || (abs(Component_Eta[n][i]) > 3.5)  );
 
-        pt_const_cut = (Component_Pt[n][i] < constituent_pT_threshold(Component_Eta[n][i],B_Field));
-
-        if (B_Field == 3.0)
-          constant_p_cut = Component_P[n][i] < 1.0; 
-        if (B_Field > 1.399 && B_Field < 1.4001) //no idea why == 1.4 fails
-          constant_p_cut = Component_P[n][i] < 0.6;
+        /* pt_const_cut = (Component_Pt[n][i] < constituent_pT_threshold(Component_Eta[n][i],B_Field)); */
+        pt_const_cut = (Component_Pt[n][i] < pt_min);
+        /* if (B_Field == 3.0) */
+        /*   constant_p_cut = Component_P[n][i] < 1.0; */ 
+        /* if (B_Field > 1.399 && B_Field < 1.4001) //no idea why == 1.4 fails */
+        /*   constant_p_cut = Component_P[n][i] < 0.6; */
 
         // Apply cuts to jet, breaking out of 
         if (eta_const_cut ) break; 
@@ -562,6 +565,7 @@ int main(int argc, char *argv[])
       float temp_dR = 1e10;
       float temp_E = 0;
       int n_neutral = 0;
+      /* bool pt_const_cut = false; */
 
       ROOT::Math::PtEtaPhiEVector gLorentz;
       ROOT::Math::PtEtaPhiEVector gFullLorentz;
@@ -575,6 +579,9 @@ int main(int argc, char *argv[])
           //Subtract Neutrals from Charged Jet
           for (int t = 0; t < alltruth_NComponent[a]; t++){
 
+            pt_const_cut = (all_Component_Pt[a][t] < pt_min);
+            if (pt_const_cut) break;
+        
               ROOT::Math::PtEtaPhiEVector gConstLorentz(all_Component_Pt[a][t],
                   all_Component_Eta[a][t],
                   all_Component_Phi[a][t],
@@ -582,6 +589,7 @@ int main(int argc, char *argv[])
               if (all_Component_Charge[a][t] == 0)
                 gLorentz -= gConstLorentz;
           }
+          if (pt_const_cut) continue;
 
           if (ROOT::Math::VectorUtil::DeltaR(gLorentz,Lorentz) < max_DeltaR)
             dPhiRj_DeltaR->Fill(TMath::Abs(TVector2::Phi_mpi_pi(Lorentz.Phi() - electron_Phi - TMath::Pi())));
@@ -723,7 +731,7 @@ int main(int argc, char *argv[])
         dPhiRj_whole->Fill(Reco_DeltaPhi);
         dPhiRj_sigmaplus->Fill(Reco_DeltaPhi*(1+DPhi_res));
         dPhiRj_sigmamin->Fill(Reco_DeltaPhi*(1-DPhi_res));
-        std::cout<<__LINE__<<": jet "<<n<<": "<<Reco_DeltaPhi*(1+DPhi_res)<<" "<<Reco_DeltaPhi<<" "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl;
+        /* std::cout<<__LINE__<<": jet "<<n<<": "<<Reco_DeltaPhi*(1+DPhi_res)<<" "<<Reco_DeltaPhi<<" "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl; */
         /* std::cout<<"DPhi_res = "<<DPhi_res<<std::endl; */
         /* std::cout<<"Delta Thing = "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl; */
         /* if (gLorentz.DeltaR(Lorentz) < max_DeltaR) */
@@ -801,7 +809,7 @@ int main(int argc, char *argv[])
   //entry loop
 
   //Write to new root file
-  TFile* fout = new TFile(Form("DeltaR_Histograms_Jet_Callibration_%fT.root",B_Field),"RECREATE");
+  TFile* fout = new TFile(Form("min_pT_%1.1f_Histograms_Jet_Callibration_%fT.root",pt_min,B_Field),"RECREATE");
   TJet_counter.Write("TJet_Counter");
   momentum_response->Write();
   justE->Write();

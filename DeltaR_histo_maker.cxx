@@ -251,7 +251,7 @@ int main(int argc, char ** argv) {
     for (int n = 0; n < njets; ++n) {
 
       if (NComponent[n] < 4) continue;
-      if (isnan(all_truthE[n])) continue;
+      /* if (isnan(all_truthE[n])) continue; */
       if (E[n] < 4.0) continue;
       ROOT::Math::PtEtaPhiEVector Lorentz(Pt[n],Eta[n],Phi[n],E[n]);
 

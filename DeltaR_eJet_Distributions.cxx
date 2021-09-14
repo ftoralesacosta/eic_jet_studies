@@ -507,7 +507,7 @@ int main(int argc, char *argv[])
     //RECO Jet Loop
     for (int n = 0; n < njets; ++n) {
 
-      if (std::isnan(gE[n])) continue; //reco jet must have a truth match
+      /* if (std::isnan(gE[n])) continue; //reco jet must have a truth match */
 
       ROOT::Math::PtEtaPhiEVector Lorentz(Pt[n],Eta[n],Phi[n],E[n]);
       /* ROOT::Math::PtEtaPhiEVector gLorentz(gPt[n],gEta[n],gPhi[n],gE[n]); */
