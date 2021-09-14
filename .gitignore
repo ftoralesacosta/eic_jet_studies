@@ -7,6 +7,6 @@
 # Unignore all dirs
 !*/
 
-*.root
+*combined.root
 *.DS_Store
 
