@@ -91,8 +91,8 @@ res_IDs = ["h1_dpp","h1_dph","h1_dth","h1_eDelta_dph"] #Types of Resolutions
 fit_type = "double"
 
 #Files
-# tweak_string = "DeltaR_"
-tweak_string = ""
+tweak_string = "DeltaR_"
+# tweak_string = ""
 file_string = tweak_string+"histograms_reco_NoCuts_output_mom_res_sigma_eta_5_p_6_B"
 print(file_string)
 file_dict = {}
@@ -274,7 +274,7 @@ def plot_indv_resolutions(fit_type="double"):
 
     #Load from File
     res_dict = np.load('np_arrays/%s_resolutions.npy'%(tweak_string),allow_pickle=True)[()]
-    h1_dict = np.load('np_arrays/%s_indv_histos.npy'%(tweak_string),allow_pickle=True)[()]
+    h1_dictionary = np.load('np_arrays/%s_indv_histos.npy'%(tweak_string),allow_pickle=True)[()]
 
     for s in res_IDs:
 
@@ -317,8 +317,8 @@ def plot_indv_resolutions(fit_type="double"):
                     #Single Gauss Implementation
                     if (s=="h1_dpp"):
                         popt = res_dict[identifier+"Params"]
-                        plt.plot(xdata, gauss(xdata, *popt), 'r-', label='fit')
-                        plt.text(0.05,0.9,r"$\sigma = %1.4f$"%(popt[1]),fontsize=8,transform=ax.transAxes)
+                        # plt.plot(xdata, gauss(xdata, *popt), 'r-', label='fit')
+                        plt.text(0.05,0.9,r"$\sigma = %1.2f$"%(res_dict[identifier]/100),fontsize=8,transform=ax.transAxes)
 
                     #Double Gauss Implementation
                     else:
