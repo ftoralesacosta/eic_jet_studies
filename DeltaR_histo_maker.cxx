@@ -257,7 +257,6 @@ int main(int argc, char ** argv) {
 
       bool eta_const_cut = true; //avoid crack where barrel meets disks
       bool pt_const_cut = true;//cut away helixes
-      int n_neutral = 0;
       int n_ch = 0;
       int n_neutral_max = 1;
       float max_DeltaR = 0.1;
@@ -279,6 +278,7 @@ int main(int argc, char ** argv) {
       std::vector<int> v_matches;
       float temp_dR = 1e10;
       float temp_E = 0;
+      int n_neutral = 0;
 
       ROOT::Math::PtEtaPhiEVector gLorentz;
       ROOT::Math::PtEtaPhiEVector gFullLorentz;

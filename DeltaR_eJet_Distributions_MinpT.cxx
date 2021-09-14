@@ -723,7 +723,7 @@ int main(int argc, char *argv[])
         dPhiRj_whole->Fill(Reco_DeltaPhi);
         dPhiRj_sigmaplus->Fill(Reco_DeltaPhi*(1+DPhi_res));
         dPhiRj_sigmamin->Fill(Reco_DeltaPhi*(1-DPhi_res));
-        /* std::cout<<__LINE__<<": jet "<<n<<": "<<Reco_DeltaPhi*(1+DPhi_res)<<" "<<Reco_DeltaPhi<<" "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl; */
+        std::cout<<__LINE__<<": jet "<<n<<": "<<Reco_DeltaPhi*(1+DPhi_res)<<" "<<Reco_DeltaPhi<<" "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl;
         /* std::cout<<"DPhi_res = "<<DPhi_res<<std::endl; */
         /* std::cout<<"Delta Thing = "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl; */
         /* if (gLorentz.DeltaR(Lorentz) < max_DeltaR) */
