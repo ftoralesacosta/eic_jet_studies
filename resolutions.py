@@ -91,8 +91,8 @@ res_IDs = ["h1_dpp","h1_dph","h1_dth","h1_eDelta_dph"] #Types of Resolutions
 fit_type = "double"
 
 #Files
-tweak_string = "DeltaR_"
-# tweak_string = ""
+# tweak_string = "DeltaR_"
+tweak_string = ""
 file_string = tweak_string+"histograms_reco_NoCuts_output_mom_res_sigma_eta_5_p_6_B"
 print(file_string)
 file_dict = {}
@@ -337,7 +337,7 @@ def plot_indv_resolutions(fit_type="double"):
                     plt.text(0.98,0.95,"B = %1.1f T"%(B),ha="right",va="top",size=15,alpha=0.7,transform=ax.transAxes)
                     plt.tight_layout()
 
-        plt.savefig("plots/"+tweak_string+s+"_"+"%1.1f"%(B)+"_doubleGauss_Fits.pdf")
+            plt.savefig("plots/"+tweak_string+s+"_"+"%1.1f"%(B)+"_doubleGauss_Fits.pdf")
 
 def get_indv_resolutions(fit_type="double"):
     if (fit_type == "double"):
