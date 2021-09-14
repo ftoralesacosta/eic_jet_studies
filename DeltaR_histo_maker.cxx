@@ -289,12 +289,8 @@ int main(int argc, char ** argv) {
           gFullLorentz.SetCoordinates(all_truthPt[a],all_truthEta[a],all_truthPhi[a],all_truthE[a]);
 
 
-          //Count and Subtract Neutrals from Charged Jet
+          //Subtract Neutrals from Charged Jet befor DeltaR
           for (int t = 0; t < alltruth_NComponent[a]; t++){
-              if (all_Component_Charge[a][t] == 0)
-                n_neutral++;
-              else
-                n_ch++;
 
               ROOT::Math::PtEtaPhiEVector gConstLorentz(all_Component_Pt[a][t],
                   all_Component_Eta[a][t],
@@ -325,7 +321,7 @@ int main(int argc, char ** argv) {
       if (match_index < 0) continue;
       /* if (std::find(v_matches.begin(), v_matches.end(),match_index)!=v_matches.end()) continue; */
 
-      //Neutrals need to be subtracted again
+      //Neutrals need to be subtracted again, and counted this time
       gLorentz.SetCoordinates(all_truthPt[match_index],all_truthEta[match_index],all_truthPhi[match_index],all_truthE[match_index]);
       gFullLorentz.SetCoordinates(all_truthPt[match_index],all_truthEta[match_index],all_truthPhi[match_index],all_truthE[match_index]);
       for (int t = 0; t < alltruth_NComponent[match_index]; t++){
