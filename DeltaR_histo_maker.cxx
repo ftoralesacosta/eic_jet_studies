@@ -376,6 +376,7 @@ int main(int argc, char ** argv) {
 
       float eFull_DeltaPhi = TMath::Abs(TVector2::Phi_mpi_pi(gFullLorentz.Phi() - electron_gPhi - TMath::Pi()));
       float efullJet_dDeltaPhi = (eTrue_DeltaPhi-eFull_DeltaPhi)/eTrue_DeltaPhi;
+      std::cout<<__LINE__<<": "<<(eTrue_DeltaPhi-eFull_DeltaPhi)/eTrue_DeltaPhi<<std::endl;
 
       float E_gE = (Lorentz.E()/gLorentz.E());
       //float E_gE = (E[n]/gE[n]);

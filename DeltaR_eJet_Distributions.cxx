@@ -413,9 +413,9 @@ int main(int argc, char *argv[])
   TH1F * dPhiRj_sigmaplus = new TH1F("sigmaplus_dPhi_e_RecoJet", "|#Delta#varphi| #varphi_{e} - #varphi(Jet^{Reco}_{Jet}) ", 128,0,M_PI);
   TH1F * dPhiRj_sigmamin= new TH1F("sigmamin_dPhi_e_RecoJet", "|#Delta#varphi| #varphi_{e} - #varphi(Jet^{Reco}_{Jet}) ", 128,0,M_PI);
 
-  float DPhi_res = 1.7014573356719556/1000; //1.4 T field
+  float DPhi_res = sqrt(pow(0.017014573356719556,2)+pow(0.015,2)); //1.4 T field
   if (B_Field == 3.0)
-    DPhi_res = 1.4897578827222375/1000;
+    DPhi_res = sqrt(pow(0.014897578827222375,2)+pow(0.015,2));
   //Divide by 1000, for MilliRadian -> Radian
     
 
