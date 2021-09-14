@@ -185,9 +185,9 @@ int main(int argc, char ** argv) {
         h1_dph_p_et_bins[et][p] = new TH1F(Form("h1_dph_p_et_bins_%i_%i",et,p),
             ";d#phi [rad];Counts",80,-0.02,0.02);
         h1_eDelta_dph_p_et_bins[et][p] = new TH1F(Form("h1_eDelta_dph_p_et_bins_%i_%i",et,p),
-            ";e-Jet d#Delta#phi [rad];Counts",45,-0.04,0.04);
+            ";e-Jet d#Delta#phi [rad];Counts",80,-0.04,0.04);
         h1_efulljet_Delta_dph_p_et_bins[et][p] = new TH1F(Form("h1_efulljet_Delta_dph_p_et_bins_%i_%i",et,p),
-            ";e-Jet_{full} d#Delta#phi [rad];Counts",45,-0.04,0.04);
+            ";e-Jet_{full} d#Delta#phi [rad];Counts",80,-0.04,0.04);
       }
 
       else if (N_Missing_Cut){

@@ -413,9 +413,10 @@ int main(int argc, char *argv[])
   TH1F * dPhiRj_sigmaplus = new TH1F("sigmaplus_dPhi_e_RecoJet", "|#Delta#varphi| #varphi_{e} - #varphi(Jet^{Reco}_{Jet}) ", 128,0,M_PI);
   TH1F * dPhiRj_sigmamin= new TH1F("sigmamin_dPhi_e_RecoJet", "|#Delta#varphi| #varphi_{e} - #varphi(Jet^{Reco}_{Jet}) ", 128,0,M_PI);
 
-  float DPhi_res = 1.6795131252846134; //1.4 T field
+  float DPhi_res = 1.7014573356719556/1000; //1.4 T field
   if (B_Field == 3.0)
-    DPhi_res = 1.4978073880630118;
+    DPhi_res = 1.4897578827222375/1000;
+  //Divide by 1000, for MilliRadian -> Radian
     
 
   //--------------------Cut Parameters--------------------//
@@ -726,7 +727,7 @@ int main(int argc, char *argv[])
         dPhiRj_whole->Fill(Reco_DeltaPhi);
         dPhiRj_sigmaplus->Fill(Reco_DeltaPhi*(1+DPhi_res));
         dPhiRj_sigmamin->Fill(Reco_DeltaPhi*(1-DPhi_res));
-        std::cout<<__LINE__<<": jet "<<n<<": "<<Reco_DeltaPhi<<" "<<Reco_DeltaPhi*(1+DPhi_res)<<" "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl;
+        /* std::cout<<__LINE__<<": jet "<<n<<": "<<Reco_DeltaPhi<<" "<<Reco_DeltaPhi*(1+DPhi_res)<<" "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl; */
         /* std::cout<<"DPhi_res = "<<DPhi_res<<std::endl; */
         /* std::cout<<"Delta Thing = "<<Reco_DeltaPhi*(1-DPhi_res)<<std::endl; */
         /* if (gLorentz.DeltaR(Lorentz) < max_DeltaR) */

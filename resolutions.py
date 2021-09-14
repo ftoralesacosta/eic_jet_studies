@@ -20,6 +20,7 @@ def gauss(x, a, sigma):
 def double_gauss(x,a,sigma0,b,sigma1):
     return (a * np.exp(-(x) ** 2 / (2 * sigma0 ** 2)) +
             b * np.exp(-(x) ** 2 / (2 * sigma1 ** 2)) )
+    #paramater 0 = a, 1 = sigma0
 
     #Important: scipy returns the covariance matrix of the fit, from
     #which the standard error of each parameter can be obtained. If
@@ -160,6 +161,7 @@ def get_th1f_dictionary():
 
                     h1=file.Get(settings[s+"dir"]+"/%s_et_%i_p_%i_bin"%(s,eta,p))
                     identifier = ("%s_B_%1.1f_eta_%i_p_%i"%(s,B,eta,p))
+                    file.ls() 
 
                     h1_dictionary[identifier+"_vals"],h1_dictionary[identifier+"_errors"] = TH1_to_numpy_wErrors(h1,False,True)
                     h1_dictionary[identifier+"_N"] = h1.GetEntries()
@@ -219,7 +221,7 @@ def double_gauss_resolutions():
                         popt, pcov = curve_fit(double_gauss, xdata, ydata, p0=[ydata.max(), xdata.std()/4,ydata.max()/5,xdata.std()])
                         perr = np.sqrt(np.diag(pcov))
 
-                        res_dict[identifier] = popt[1]*rad_to_mrad 
+                        res_dict[identifier] = np.abs(popt[1])*rad_to_mrad 
                         res_dict[identifier+"Error"] = perr[1]*rad_to_mrad
                         res_dict[identifier+"Params"] = popt
 
@@ -315,7 +317,7 @@ def plot_indv_resolutions(fit_type="double"):
                     if (s=="h1_dpp"):
                         popt = res_dict[identifier+"Params"]
                         plt.plot(xdata, gauss(xdata, *popt), 'r-', label='fit')
-                        plt.text(0.05,0.9,r"$\sigma = %1.3f$"%(popt[1]),fontsize=8,transform=ax.transAxes)
+                        plt.text(0.05,0.9,r"$\sigma = %1.4f$"%(popt[1]),fontsize=8,transform=ax.transAxes)
 
                     #Double Gauss Implementation
                     else:
@@ -324,7 +326,7 @@ def plot_indv_resolutions(fit_type="double"):
                             plt.plot(xdata, double_gauss(xdata, *popt), 'r--', label='fit')
                         elif (fit_type == "single"):
                             plt.plot(xdata, gauss(xdata, *popt), 'r--', label='fit')
-                        plt.text(0.05,0.9,r"$\sigma = %1.3f$"%(popt[1]),fontsize=8,transform=ax.transAxes)
+                        plt.text(0.05,0.9,r"$\sigma = %1.4f$"%(np.abs(popt[1])),fontsize=8,transform=ax.transAxes)
 
                     #aesthetics
                     plt.xlim(settings[s+"plotlim"])
@@ -334,7 +336,7 @@ def plot_indv_resolutions(fit_type="double"):
                     plt.text(0.98,0.95,"B = %1.1f T"%(B),ha="right",va="top",size=15,alpha=0.7,transform=ax.transAxes)
                     plt.tight_layout()
 
-        plt.savefig(tweak_string+s+"_"+"%1.1f"%(B)+"_doubleGauss_Fits.pdf")
+        plt.savefig("plots/"+tweak_string+s+"_"+"%1.1f"%(B)+"_doubleGauss_Fits.pdf")
 
 def get_indv_resolutions(fit_type="double"):
     if (fit_type == "double"):
@@ -418,7 +420,7 @@ def plot_resolutions_p_eta():
             yticks = ticker.MaxNLocator(6)
             plt.ylabel(ylabels[s],fontsize=label_size,y=0.5)
             ax.yaxis.set_major_locator(yticks)
-        plt.savefig(tweak_string+"B_%1.1f_resolutions_eta_mom.pdf"%(B))
+        plt.savefig("plots/"+tweak_string+"B_%1.1f_resolutions_eta_mom.pdf"%(B))
         plt.show()
 
 
@@ -448,6 +450,6 @@ def weighted_avg_resolutions():
                 for p in range(N_mom):
                     identifier = ("%s_B_%1.1f_eta_%i_p_%i"%(s,B,eta,p))
                     #print(B,res_dict[identifier+"_dDeltaPhi_res"], h1dict[identifier+"_N"])
-                    weighted_avg += res_dict[identifier]*h1_dictionary[identifier+"_N"]
+                    weighted_avg += np.abs(res_dict[identifier])*h1_dictionary[identifier+"_N"]
                     sum_N +=h1_dictionary[identifier+"_N"]
             print(s,B,weighted_avg/sum_N)
