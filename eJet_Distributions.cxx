@@ -416,7 +416,9 @@ int main(int argc, char *argv[])
   float DPhi_res = 0.015059458510564696; //1.4 T field
   if (B_Field == 3.0)
     DPhi_res = 0.017602173880750444;
-    
+  //res are relative errors, summed in quadrature with 1.5% uncertainty expected from unfolding.
+  // res errors are likely overestimated to be conservative, but are generally quite small.
+  // These errors are calculated in the delta phi jupyter notebook  
 
   //--------------------Cut Parameters--------------------//
   float max_DeltaR = 0.1; //reco-truth match
